@@ -11,9 +11,10 @@ namespace projeto.Data.Repositories
     {
         private readonly DataContext context;
 
-        public DoctorRepository(DataContext context){
-            this.context = context;
+        public DoctorRepository(){
+            this.context = new DataContext();
         }
+
 
         public void Delete(int entityId){
             var doctor = GetById(entityId);

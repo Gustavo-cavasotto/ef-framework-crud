@@ -1,54 +1,35 @@
-﻿using projeto.Data.Repositories;
-using projeto.Domain.Interfaces;
-using projeto.Domain;
-using projeto.Data;
-
-var db = new DataContext();
-
-IDoctorRepository _doctorRepository = new DoctorRepository(db);
-// var doctor = new Doctor(){
-//     Id = 1,
-//     name = "Agostinho Potrich",
-//     specialty = "Cardiologist"
-// };
+﻿using System.Net;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 
 
-// _doctorRepository.Save(doctor);
-// _doctorRepository.Delete(3);
+var builder = WebApplication.CreateBuilder(args);
 
-var newDoctor = _doctorRepository.GetById(2);
-newDoctor.specialty = "Ginecologist";
-_doctorRepository.Update(newDoctor);
+// Add services to the container.
 
-var doctorsList = _doctorRepository.GetAll();
-foreach (var item in doctorsList){
-    Console.WriteLine($"Id: {item.Id} | Name: {item.name} | Specialty: {item.specialty}");
-}
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-// IPatientRepository _patientRepository = new PatientRepository(db);
-// var patient = new Patient(){
-//     Id = 1,
-//     name = "João Vitor",
-// };
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Listen(IPAddress.Any, 5001);
+});
 
-// _patientRepository.Save(patient);
-
-IAppointmentRepository _appointmentRepository = new AppointmentRepository(db);
-// var appointment = new Appointment(){
-//     Id = 1,
-//     date = new DateTime(2023, 5, 28),
-//     doctor = doctor,
-//     patient = patient
-// };
-
-// _appointmentRepository.Save(appointment);
+var app = builder.Build();
 
 
-var appointmentChange = _appointmentRepository.GetById(1);
-appointmentChange.date = new DateTime(2023, 5, 28).AddHours(18);
-_appointmentRepository.Update(appointmentChange);
+app.UseSwagger();
+app.UseSwaggerUI();
 
-var appointmentsList = _appointmentRepository.GetAll();
-foreach (var item in appointmentsList){
-    Console.WriteLine($"Id: {item.Id} | Date: {item.date} | Doctor: {item.doctor.name} | Patient: {item.patient.name}");
-}
+//app.UseHttpsRedirection();
+
+//app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
